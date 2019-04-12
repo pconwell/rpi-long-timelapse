@@ -30,3 +30,13 @@ network={
 
 ### SSH
 `touch /boot/ssh`
+
+## Camera Setup
+
+## Scheduling Photos
+
+## Storing Photos
+
+## Power / Storage redudancy
+
+## Create Timelapse
