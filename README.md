@@ -6,4 +6,27 @@ This project will set up a long-term time lapse with an unknown end date. The pr
 ## Initial Setup
 I will be using a [Raspberry Pi Zero W](https://www.raspberrypi.org/products/raspberry-pi-zero-w/) and a [camera module](https://www.raspberrypi.org/products/camera-module-v2/). Make sure you also get the correct cable as the camera module is compatable with both the full size pi and pi zero - but the cables are different between the full size and the zero. I ordered [this kit](https://www.adafruit.com/product/3414), which comes with everything you need except for a micro SD card. Pretty much any SD card should do fine, but I'm using [this one](https://www.amazon.com/gp/product/B06XYHN68L) which I honestly don't know much about other than it was relatively cheap and was recommended online for use with the pi.
 
-If you are not familiar with the pi zero, it does not have an ethernet port and only has mini hdmi and micro usb ports. If you have the adapters already, no big deal. But, I don't have the correct adapters and I don't want to double the price.
+If you are not familiar with the pi zero, it does not have an ethernet port and only has mini hdmi and micro usb ports. If you have the adapters already, no big deal. But, I don't have the correct adapters and I don't want to double the price of this project by buying adapters I'll use once. So, we will need to set up wifi and ssh in a somewhat unique way.
+
+### Raspbian
+
+sdfj kl;gj l;fg
+
+### Wifi
+
+`/boot/wpa_supplicant.conf`
+
+```
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=«your_ISO-3166-1_two-letter_country_code»
+
+network={
+    ssid="«your_SSID»"
+    psk="«your_PSK»"
+    key_mgmt=WPA-PSK
+}
+```
+
+### SSH
+`touch /boot/ssh`
