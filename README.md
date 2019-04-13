@@ -16,8 +16,8 @@ https://www.balena.io/etcher/
 
 1. Flash raspbian to SD card
 2. Open/mount SD card on desktop and navigate to /boot/
-3. Create `/wpa_supplicant.conf` with below contents
-4. Create empty file named `ssh`
+3. Create `/wpa_supplicant.conf` with below contents, replacing the values as necessary
+4. Create empty file named `ssh` (`$ touch /boot/ssh`)
 5. Eject SD card and put SD card into pi
 6. Power up pi
 7. Find pi's IP address in your router/DHCP
@@ -45,17 +45,36 @@ network={
 ```
 
 ### fstab
+Here we are setting up a network share because we won't be able to hold terabytes worth of information on the raspberry pi itself. You will need to set up a shared drive somehow, which I will currently not cover here. Just for sake of example, my network share is a samba share drive running on an ubuntu host. The host server is at IP `192.168.1.25` and the shared directory is `/shared`. Here I have mounted the network share drive at `/home/pi/shared` on the raspberry pi. Now, if I tell the raspberry pi to save a photo to `/home/pi/shared` it is *really* saving the picture to the network server at `//192.168.1.25/shared`. Setting up a network drive gives me several advantages. 1) Like I said, the rpi cannot hold TB of data, 2) I can easily manipulate the files remotely now, and 3) I can more easily create backups of the photos. I'd really hate to get 6 months into this project then lose data if my harddrive goes out.
 
 `//192.168.1.25/shared  /home/pi/shared cifs guest,uid=1000,iocharset=utf8 0 0`
 
+## Additional Settings
+Once it looks like you can boot up and sign in to the pi, and the camera is working, you can tweak some other settings in `$ sudo raspi-config` such as setting your locale, changing your password (highly recommended), etc.
 
+Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI and not using a GUI), I would recommend the following settings/tweaks inside raspi-config:
 
-### SSH
-`touch /boot/ssh`
+1. Run update
+2. Advanced -> expand storage (might be optional depending on the size of your SD card. A 32 GB card did not apparently need to be expanded)
+3. Advanced -> memory split -> 16 MB
+4. Interface -> Camera -> On (should already be on)
+5. Interface -> SSH -> On (should already be on)
+6. Interface -> Everthing else -> Off (Should alredy be off, so shouldn't need to change)
+7. Localization -> Change settings according to your language/location/timezone/etc
+8. Unless you have other specific changes you need/want, exit raspi-config  
 
-
+`$ sudo shutdown now -r` for good measure
 
 ## Camera Setup
+Depending on what exactly you are wanting to do, the camera setup can either be really easy and straight forward, or it can be fairly invovled. Let's start with just taking a series of photos over a 5 minute period (one picture every 60 seconds) to see if that will work:
+
+`$ raspistill --timeout 300000 --timelapse 60000 --output ~/shared/rpi-timelapse/image%04d.jpg`
+
+If that seems to work, let's try a 12 hour timelapse. The demo we just created is (depending on your settings) less than one second long, so we need a longer demo to make sure it's working correctly.
+
+`$ raspistill --timeout 43200000 --timelapse 60000 --output ~/shared/rpi-timelapse/image%06d.jpg`
+
+Remember, we are measuring in milliseconds, so 12 hours x 60 minutes x 60 seconds x 1000 (milliseconds) == 43200000. I've also changed the filename output from `%04` to `%06` so we don't evetually start overwritting our first photos (even though 4 digits would have given us 10,000 photos, which should last approximately 166 hours or one week... but if we are going to take a year long timelapse we need to plan ahead).
 
 ## Scheduling Photos
 
