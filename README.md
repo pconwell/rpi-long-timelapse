@@ -40,3 +40,10 @@ network={
 ## Power / Storage redudancy
 
 ## Create Timelapse
+
+## Links
+https://www.raspberrypi.org/documentation/raspbian/applications/camera.md
+https://www.raspberrypi.org/documentation/usage/camera/raspicam/raspistill.md
+https://www.raspberrypi.org/documentation/hardware/camera/README.md
+https://www.raspberrypi.org/documentation/usage/camera/raspicam/timelapse.md
+https://www.raspberrypi.org/products/camera-module-v2/
