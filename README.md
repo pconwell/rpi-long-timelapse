@@ -66,6 +66,8 @@ Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI 
 `$ sudo shutdown now -r` for good measure
 
 ## Camera Setup
+> https://www.raspberrypi.org/documentation/raspbian/applications/camera.md
+
 Depending on what exactly you are wanting to do, the camera setup can either be really easy and straight forward, or it can be fairly invovled. Let's start with just taking a series of photos over a 5 minute period (one picture every 60 seconds) to see if that will work:
 
 `$ raspistill --timeout 300000 --timelapse 60000 --output ~/shared/rpi-timelapse/image%04d.jpg`
@@ -75,6 +77,8 @@ If that seems to work, let's try a 12 hour timelapse. The demo we just created i
 `$ raspistill --timeout 43200000 --timelapse 60000 --output ~/shared/rpi-timelapse/image%06d.jpg`
 
 Remember, we are measuring in milliseconds, so 12 hours x 60 minutes x 60 seconds x 1000 (milliseconds) == 43200000. I've also changed the filename output from `%04` to `%06` so we don't evetually start overwritting our first photos (even though 4 digits would have given us 10,000 photos, which should last approximately 166 hours or one week... but if we are going to take a year long timelapse we need to plan ahead).
+
+
 
 ## Scheduling Photos
 
