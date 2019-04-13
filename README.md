@@ -10,7 +10,20 @@ If you are not familiar with the pi zero, it does not have an ethernet port and 
 
 ### Raspbian
 
-sdfj kl;gj l;fg
+https://www.raspberrypi.org/downloads/raspbian/
+
+https://www.balena.io/etcher/
+
+1. Flash raspbian to SD card
+2. Open/mount SD card on desktop and navigate to /boot/
+3. Create `/wpa_supplicant.conf` with below contents
+4. Create empty file named `ssh`
+5. Eject SD card and put SD card into pi
+6. Power up pi
+7. Find pi's IP address in your router/DHCP
+8. SSH into pi (pi@IP:raspberry)
+9. Change username and/or password
+10. Set up Camera
 
 ### Wifi
 
@@ -30,6 +43,8 @@ network={
 
 ### SSH
 `touch /boot/ssh`
+
+
 
 ## Camera Setup
 
