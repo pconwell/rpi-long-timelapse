@@ -78,6 +78,19 @@ If that seems to work, let's try a 12 hour timelapse. The demo we just created i
 
 Remember, we are measuring in milliseconds, so 12 hours x 60 minutes x 60 seconds x 1000 (milliseconds) == 43200000. I've also changed the filename output from `%04` to `%06` so we don't evetually start overwritting our first photos (even though 4 digits would have given us 10,000 photos, which should last approximately 166 hours or one week... but if we are going to take a year long timelapse we need to plan ahead).
 
+Another issue we need to think about is what happens if we lose our SSH session (network drops, computer freezes, power goes out, etc, etc). For now, let's use screen so we can detach our session. Later on, we will use some type of automation (probably cron) to schedule the pictures long term for us. We need to think about redudancy and automation - how will we recover if the power goes out, for example? Over the span of a year, it is likely that the power or network will go out at least once. But, for now, let's assume everthing will keep working for the next twelve hours and just add `screen` to our toolbag.
+
+1. `$ ssh [rpi IP]`
+2. `$ sudo apt install screen`
+3. `$ screen`
+4. `$ raspistill --timeout 43200000 --timelapse 60000 --output ~/shared/rpi-timelapse/image%06d.jpg`
+5. `[ctrl]+[a]` then `[d]` to detach session
+6. To reattach to a screen session `$ screen -r`
+
+There is much more you can do with screen, but for now this is all we need. Feel free to learn more about it.
+
+
+
 
 
 ## Scheduling Photos
