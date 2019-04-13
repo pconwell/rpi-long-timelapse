@@ -22,8 +22,11 @@ https://www.balena.io/etcher/
 6. Power up pi
 7. Find pi's IP address in your router/DHCP
 8. SSH into pi (pi@IP:raspberry)
-9. Change username and/or password
-10. Set up Camera
+9. `$ sudo raspi-config` and enable camera
+10. reboot
+11. `$ nano /etc/fstab`
+12. `$ sudo mount -a`
+13. test camera: `raspistill -o ~/shared/cam.jpg`
 
 ### Wifi
 
@@ -40,6 +43,12 @@ network={
     key_mgmt=WPA-PSK
 }
 ```
+
+### fstab
+
+`//192.168.1.25/shared  /home/pi/shared cifs guest,uid=1000,iocharset=utf8 0 0`
+
+
 
 ### SSH
 `touch /boot/ssh`
