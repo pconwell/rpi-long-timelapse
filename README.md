@@ -93,6 +93,8 @@ There is much more you can do with screen, but for now this is all we need. Feel
 
 > I'll hunt down another power supply later (I've got a bunch, just don't want to hunt them down before going to work). In the meantime, I'm going to try adding `--burst` and `--nopreview`. I don't think that will make a difference, but they are probably options I should use anyway to reduce overhead so I'll try them out. Once I get back from work, I will find a spare 2 A USB power supply and see if that makes a difference.
 
+> Timelapse still doesn't seem to work very well, even with a 2.4 A power supply. It still gives out after about 20 minutes or so. I'm going to try it with crontab every minute.
+
 
 
 ## Scheduling Photos
