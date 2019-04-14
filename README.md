@@ -95,6 +95,25 @@ There is much more you can do with screen, but for now this is all we need. Feel
 
 > Timelapse still doesn't seem to work very well, even with a 2.4 A power supply. It still gives out after about 20 minutes or so. I'm going to try it with crontab every minute.
 
+> Okay, we are skipping ahead in our testing and going straight to bash and cron. Running the command directly in cron would not name the files correctly. So we are going to set up a cron job to run a bash script. The bash script will take a single picture and name the file the date and time. The cron job will run every one minute.
+
+Bash:
+```bash
+#!/bin/bash
+
+DATE=$(date +"%Y%m%d_%H%M")
+
+raspistill --output /home/pi/shared/rpi-timelapse/$DATE.jpg --burst --nopreview
+```
+
+Cron:
+```
+* * * * * /home/pi/timelapse.sh
+```
+
+
+
+
 
 
 ## Scheduling Photos
