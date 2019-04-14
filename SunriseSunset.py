@@ -1,21 +1,24 @@
 import pandas as pd
 import glob
+import csv
+import datetime
 
 pd.set_option('display.max_columns', None)
 
 
 month = 1
 start_year = 2019
-end_year = 2021
+end_year = 2038
 country = 'usa'
 city = 'nashville'
 
 # Loop and download the year(s) you want
-while start_year < end_year:
+year = start_year
+while year < end_year:
 
     while month < 13:
 
-        data = pd.read_html(f"https://www.timeanddate.com/sun/{country}/{city}?month={month}&year={start_year}")
+        data = pd.read_html(f"https://www.timeanddate.com/sun/{country}/{city}?month={month}&year={year}")
 
         df = data[0]
 
@@ -40,9 +43,9 @@ while start_year < end_year:
 
         # zero pad the month so that the files sort correctly
         if len(str(month)) == 1:
-            df.to_csv(f'./csv_files/{start_year}0{month}.csv')
+            df.to_csv(f'./csv_files/{year}0{month}.csv')
         else:
-            df.to_csv(f'./csv_files/{start_year}{month}.csv')
+            df.to_csv(f'./csv_files/{year}{month}.csv')
 
         # reset the month and start the loop over for the next year
         if month == 12:
@@ -51,15 +54,16 @@ while start_year < end_year:
         else:
             month += 1
 
-    start_year += 1
+    year += 1
 
 
 # read a list of all the csv files we just downlaoded
 csv_files = glob.glob("./csv_files/*.csv")
 
+
 # read over each csv file one by one and add the next one to the bottom
 header_saved = False
-with open(f'{city}.csv','w') as fout:
+with open(f'output.csv','w') as fout:
     for filename in csv_files:
         with open(filename) as fin:
             header = next(fin)
@@ -69,22 +73,31 @@ with open(f'{city}.csv','w') as fout:
             for line in fin:
                 fout.write(line)
 
-# maybe one day fix the output.csv here
-# but for now it's pretty easy to open the file in excel
-# drag and expand the first column to fill up the dates
-# then fix the times to be proper 24 hour times
 
-# with open('out.csv', mode='w', newline='') as out_file:
-#     out_writer = csv.writer(out_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-#
-#     with open(f'{city}.csv') as csv_file:
-#         csv_reader = csv.reader(csv_file, delimiter=',')
-#         #out_writer.writerow(row)
-#         #next(csv_reader) # skip header
-#         for row in csv_reader:
-#             #print(f"{int(row[1][:-2][:1])+12}")
-#             out_writer.writerow(row) # right now this just created a duplicate csv. Here is where the magic needs to happen to fix the csv
+# fix and clean up the csv file
+i = -1
 
+with open(f'{city}.csv', mode='w', newline='') as out_file:
+    out_writer = csv.writer(out_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
+    with open('output.csv') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for row in csv_reader:
+            if i == -1: #write out header row
+                out_writer.writerow(['date', row[1], row[2], row[3], row[4],row[5], row[6], row[7], row[8]])
+            else:
+                out_writer.writerow([
+                                     str(datetime.date(start_year, month, 1) + datetime.timedelta(i)),
+                                     row[1][:-3], #am
+                                     row[2][:-3], #am
+                                     row[3][:-3], #am
+                                     row[4][:-3], #am
+                                     f"{str(int(row[5][:-3].split(':')[0]) + 12)}:{row[5][:-3].split(':')[1]}",
+                                     f"{str(int(row[6][:-3].split(':')[0]) + 12)}:{row[6][:-3].split(':')[1]}",
+                                     f"{str(int(row[7][:-3].split(':')[0]) + 12)}:{row[7][:-3].split(':')[1]}",
+                                     f"{str(int(row[8][:-3].split(':')[0]) + 12)}:{row[8][:-3].split(':')[1]}"
+                                     ])
+
+            i += 1
 
 print('done')
