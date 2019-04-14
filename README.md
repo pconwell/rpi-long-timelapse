@@ -91,6 +91,8 @@ There is much more you can do with screen, but for now this is all we need. Feel
 
 > Note to self, so far the 12 hour test has not been sucessful. The seriese of photos will error out after 15 - 30 minutes. There does not seem to be a consistant error so far. The last run just stopped working after 26 captures. The raspistill process seems to be still running but it just stopped producing photos. My first guess is that the power supply I am currently using will output 0.5 A but I believe (I haven't tested this) that the rpi zero needs about 0.7 A to run with wifi and an additional ~150 mA each time it captures a photo. So I'm guessing (hoping) that the power supply is the problem.
 
+> I'll hunt down another power supply later (I've got a bunch, just don't want to hunt them down before going to work). In the meantime, I'm going to try adding `--burst` and `--nopreview`. I don't think that will make a difference, but they are probably options I should use anyway to reduce overhead so I'll try them out. Once I get back from work, I will find a spare 2 A USB power supply and see if that makes a difference.
+
 
 
 ## Scheduling Photos
