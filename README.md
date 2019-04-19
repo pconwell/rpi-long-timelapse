@@ -97,9 +97,10 @@ Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI 
 
 
 
-
 ----
+
 Don't bother with anything below here ...
+
 ----
 
 
@@ -148,7 +149,9 @@ Cron:
 
 
 ----
+
  ... and above here
+
 ----
 
 
@@ -169,3 +172,5 @@ https://www.raspberrypi.org/documentation/usage/camera/raspicam/raspistill.md
 https://www.raspberrypi.org/documentation/hardware/camera/README.md
 https://www.raspberrypi.org/documentation/usage/camera/raspicam/timelapse.md
 https://www.raspberrypi.org/products/camera-module-v2/
+
+https://picamera.readthedocs.io/en/release-1.13/index.html
