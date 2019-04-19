@@ -92,6 +92,17 @@ Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI 
 ## Camera Setup
 > https://www.raspberrypi.org/documentation/raspbian/applications/camera.md
 
+> `$ sudo apt install python3-picamera`
+
+
+
+
+
+----
+Don't bother with anything below here ...
+----
+
+
 Depending on what exactly you are wanting to do, the camera setup can either be really easy and straight forward, or it can be fairly invovled. Let's start with just taking a series of photos over a 5 minute period (one picture every 60 seconds) to see if that will work:
 
 `$ raspistill --timeout 300000 --timelapse 60000 --output ~/shared/rpi-timelapse/image%04d.jpg`
@@ -135,6 +146,10 @@ Cron:
 * * * * * /home/pi/timelapse.sh
 ```
 
+
+----
+ ... and above here
+----
 
 
 
