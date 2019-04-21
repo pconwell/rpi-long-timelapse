@@ -1,6 +1,21 @@
 from time import sleep
 from datetime import datetime
 from picamera import PiCamera as camera
+import pandas as pd
+
+# read the sunrise/sunset csv into a pandas dataframe
+
+df = pd.read_csv('./nashville.csv')
+
+# find the sunrise and sunset times for today's date:
+sunrise = df.loc[df['date'] == datetime.today().strftime("%Y-%m-%d")].values.tolist()[0][4]
+sunset = df.loc[df['date'] == datetime.today().strftime("%Y-%m-%d")].values.tolist()[0][5]
+
+# convert sunrise and sunset to datetime objects (there is almost certainly a better way to do this):
+sunrise = datetime.strptime(datetime.today().strftime("%Y-%m-%d") + " " + sunrise, "%Y-%m-%d %H:%M")
+sunset = datetime.strptime(datetime.today().strftime("%Y-%m-%d") + " " + sunset, "%Y-%m-%d %H:%M")
+
+if datetime.now() > sunrise and datetime.now() < sunset:
 
 cam = camera(resolution=(3280, 1845))
 
