@@ -86,7 +86,7 @@ Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI 
 6. Interface -> Everthing else -> Off (Should alredy be off, so shouldn't need to change)
 7. Localization -> Change settings according to your language/location/timezone/etc
 8. Boot Option -> Desktop/CLI -> Console Autologin (since we are not using the GUI, this disables the GUI and frees up a good chunk of RAM)
-9.  Boot Options -> Wait for Network at Boot -> Disabled (You may be able to enable this, but I'm not sure how well this will cooperate with wifi so I disabled this setting. I don't want it to hang if it can't immediately connect to wifi for some reason.)
+9.  Boot Options -> Wait for Network at Boot -> Enabled (This could potentially cause an issue, but I don't have a good fool-proof solution. Since we are not hardwired in, we are going to have to wait for wifi to connect. If wifi doesn't connect for some reason, we could get hung during boot. But, if we don't wait for boot, the network drive probably won't auto-mount. One thing I haven't been able to find in the documentation is what happens if it cannot connect to the network. Does it fail and hang? Does it eventally boot anyway? I don't know...)
 10. Unless you have other specific changes you need/want, exit raspi-config  
 
 `$ sudo shutdown now -r` for good measure
@@ -108,75 +108,31 @@ Remember, I am using a shared network drive to store the images. So adjust the o
 You will likely need to adjust your focus. Using the focus tool you bought (you bought one, right?), adjust the focus and take another picture. This can be a bit time consuming, but you really want to make sure the camera is properly focused because once we get it focused and mounted, we won't touch the camera itself again for a long time. Once the camera is focused and mounted, everything else we will do is on the software side. So take your time here and make sure you are happy with your physical set up.
 
 
-
-
-
-----
-
-Don't bother with anything below here ...
-
-----
-
-
-Depending on what exactly you are wanting to do, the camera setup can either be really easy and straight forward, or it can be fairly invovled. Let's start with just taking a series of photos over a 5 minute period (one picture every 60 seconds) to see if that will work:
-
-`$ raspistill --timeout 300000 --timelapse 60000 --output ~/shared/rpi-timelapse/image%04d.jpg`
-
-If that seems to work, let's try a 12 hour timelapse. The demo we just created is (depending on your settings) less than one second long, so we need a longer demo to make sure it's working correctly.
-
-`$ raspistill --timeout 43200000 --timelapse 60000 --output ~/shared/rpi-timelapse/image%06d.jpg`
-
-Remember, we are measuring in milliseconds, so 12 hours x 60 minutes x 60 seconds x 1000 (milliseconds) == 43200000. I've also changed the filename output from `%04` to `%06` so we don't evetually start overwritting our first photos (even though 4 digits would have given us 10,000 photos, which should last approximately 166 hours or one week... but if we are going to take a year long timelapse we need to plan ahead).
-
-Another issue we need to think about is what happens if we lose our SSH session (network drops, computer freezes, power goes out, etc, etc). For now, let's use screen so we can detach our session. Later on, we will use some type of automation (probably cron) to schedule the pictures long term for us. We need to think about redudancy and automation - how will we recover if the power goes out, for example? Over the span of a year, it is likely that the power or network will go out at least once. But, for now, let's assume everthing will keep working for the next twelve hours and just add `screen` to our toolbag.
-
-1. `$ ssh [rpi IP]`
-2. `$ sudo apt install screen`
-3. `$ screen`
-4. `$ raspistill --timeout 43200000 --timelapse 60000 --output ~/shared/rpi-timelapse/image%06d.jpg`
-5. `[ctrl]+[a]` then `[d]` to detach session
-6. To reattach to a screen session `$ screen -r`
-
-There is much more you can do with screen, but for now this is all we need. Feel free to learn more about it.
-
-> Note to self, so far the 12 hour test has not been sucessful. The seriese of photos will error out after 15 - 30 minutes. There does not seem to be a consistant error so far. The last run just stopped working after 26 captures. The raspistill process seems to be still running but it just stopped producing photos. My first guess is that the power supply I am currently using will output 0.5 A but I believe (I haven't tested this) that the rpi zero needs about 0.7 A to run with wifi and an additional ~150 mA each time it captures a photo. So I'm guessing (hoping) that the power supply is the problem.
-
-> I'll hunt down another power supply later (I've got a bunch, just don't want to hunt them down before going to work). In the meantime, I'm going to try adding `--burst` and `--nopreview`. I don't think that will make a difference, but they are probably options I should use anyway to reduce overhead so I'll try them out. Once I get back from work, I will find a spare 2 A USB power supply and see if that makes a difference.
-
-> Timelapse still doesn't seem to work very well, even with a 2.4 A power supply. It still gives out after about 20 minutes or so. I'm going to try it with crontab every minute.
-
-> Okay, we are skipping ahead in our testing and going straight to bash and cron. Running the command directly in cron would not name the files correctly. So we are going to set up a cron job to run a bash script. The bash script will take a single picture and name the file the date and time. The cron job will run every one minute.
-
-Bash:
-```bash
-#!/bin/bash
-
-DATE=$(date +"%Y%m%d_%H%M")
-
-raspistill --output /home/pi/shared/rpi-timelapse/$DATE.jpg --burst --nopreview
-```
-
-Cron:
-```
-* * * * * /home/pi/timelapse.sh
-```
-
-
-----
-
- ... and above here
-
-----
-
-
-
-
-
 ## Scheduling Photos
+
+> Remember, (1) the rpi zero is pretty low powered, and (2) pandas adds a non-trivial amount of overhead, and (3) writing to a network share over wifi adds overhead as well, so with this particular setup it takes a good 20 seconds per picture. If you are taking a picture more frequently than once per minute it may be an issue. We could increase efficency by (1) getting rid of pandas and parsing the csv without pandas, (2) write the image to the SD card then move the image(s) during non peak times (like midnight for example). For now, this works for my needs so I currently do not plan to fix these problems.
+
+Scheduling the photos is pretty straight forward. We just need to set a cronjob to execute our python script every one minute. We could probably be more efficent if we just had one python script that scheduled the captures for us, but my concern is redudancy. What if the power goes out? How will the python script recover? Will it start at boot? What if the network is down? Will the python script fail with an error? What if something unexpected happens and the script fails? How will the script recover and start capturing images again? I think the best way around all these issues is to just execute the script every 60 seconds. Yes, it adds overhead with importing pandas every time, etc... but it's (I think) the best way to make sure the images are being captured.
+
+`$ crontabl -e`
+
+`* * * * * /home/pi/capture.py`
+
+> the raspistill function seems fine for capturing a signle image, but I had a lot of issues using `raspistill --timelapse`. I was unable to produce more than about 20 images before the process would fail.
+
+
 
 ## Storing Photos
 
+> redundancy & backups here
+
+> crashplan
+
 ## Power / Storage redudancy
+
+> probably not going to worry about power redundancy right now because (1) the power rarely goes out here, and (2) if/when it does go out it's only for short durations, and (3) once the power comes back on it will automatically boot back up and start taking pictures again.
+
+> One consideration I need to keep in mind is the server that hosts the samaba share takes about 15 minutes to boot up, so if there is a power failure, the rpi will be fine but the network share won't exist and there is (currently) no good way to re-mount the network share automatically. This *will* need to be addressed. Intial thought is to save the images to the internal SD card then move the images at night AND if the network is up. If the network is not up, reboot the pi and try again?
 
 ## Create Timelapse
 
