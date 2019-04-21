@@ -7,12 +7,13 @@ cam = camera(resolution=(3280, 1845))
 # Set ISO to the desired value
 cam.iso = 50
 
-# 'crop' the image to the area you want
-# These settings don't seem to make sense in a logical way
-# so you will just have to play with the numbers until you
-# get what you want. Best I can tell, x + w needs to equal 1
-# and y + h needs to equal 1 or you will distort the image.
-#(x, y, h, w)
+# 'crop' the image to the area you want.
+# These settings don't make sense to me in a logical way so you will
+# just have to play with the numbers until you get what you want.
+# The below setting, for example, will crop the image to the lower right part of the image.
+# In other words, the left and top portion of the image will be removed.
+# Best I can tell, x + w needs to equal 1 and y + h needs to equal 1 or you will distort the image.
+# zoom = (x, y, h, w)
 cam.zoom = (0.0, 0.25, .75, 1.0)
 
 # Wait for the automatic gain control to settle
