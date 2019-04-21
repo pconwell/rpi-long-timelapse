@@ -142,7 +142,7 @@ Scheduling the photos is pretty straight forward. We just need to set a cronjob 
 
 ```shell
 $ ls *.jpg > stills.txt
-$ mencoder -nosound -ovc lavc -lavcopts vcodec=mpeg4:aspect=4/3:vbitrate=64000000 -vf scale=3280:2460 -o timelapse.avi -mf type=jpeg:fps=24 mf://@stills.txt
+$ mencoder -nosound -ovc lavc -lavcopts vcodec=mpeg4:aspect=16/9:vbitrate=64000000 -vf scale=3280:2460 -o timelapse.avi -mf type=jpeg:fps=24 mf://@stills.txt
 ```
 
 ## Links
