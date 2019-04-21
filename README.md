@@ -74,7 +74,7 @@ Here we are setting up a network share because we won't be able to hold terabyte
 `//192.168.1.25/shared  /home/pi/shared cifs guest,uid=1000,iocharset=utf8 0 0`
 
 ## Additional Settings
-Once it looks like you can boot up and sign in to the pi, and the camera is working, you can tweak some other settings in `$ sudo raspi-config` such as setting your locale, changing your password (highly recommended), etc.
+Once it looks like you can boot up and sign in to the pi, and t he camera is working, you can tweak some other settings in `$ sudo raspi-config` such as setting your locale, changing your password (highly recommended), etc.
 
 Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI and not using a GUI), I would recommend the following settings/tweaks inside raspi-config:
 
@@ -85,7 +85,9 @@ Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI 
 5. Interface -> SSH -> On (should already be on)
 6. Interface -> Everthing else -> Off (Should alredy be off, so shouldn't need to change)
 7. Localization -> Change settings according to your language/location/timezone/etc
-8. Unless you have other specific changes you need/want, exit raspi-config  
+8. Boot Option -> Desktop/CLI -> Console Autologin (since we are not using the GUI, this disables the GUI and frees up a good chunk of RAM)
+9.  Boot Options -> Wait for Network at Boot -> Disabled (You may be able to enable this, but I'm not sure how well this will cooperate with wifi so I disabled this setting. I don't want it to hang if it can't immediately connect to wifi for some reason.)
+10. Unless you have other specific changes you need/want, exit raspi-config  
 
 `$ sudo shutdown now -r` for good measure
 
@@ -93,6 +95,18 @@ Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI 
 > https://www.raspberrypi.org/documentation/raspbian/applications/camera.md
 
 > `$ sudo apt install python3-picamera`
+> `$ sudo apt install python3-pandas`
+
+> pandas adds a decent amount of overhead, but it will make working with the csv sunrise/sunset file easier. If you are really trying to make this as simple, efficient and streamlined as possible you can do away with pandas. But I'm lazy, it works, and this rpi is doing nothing but taking a picture every one minute so I'm not too concerned with the overhead.
+
+We should mostly be up and running at this point, time to test the camera.
+
+`$ raspistill --output ~/shared/rpi-timelapse/image.jpg`
+
+Remember, I am using a shared network drive to store the images. So adjust the output location to wherever you are going to store your images. If you wanted to store the images on the internal SD card, you could use something like `./image.jpg` or `./images/image.jpg` instead.
+
+You will likely need to adjust your focus. Using the focus tool you bought (you bought one, right?), adjust the focus and take another picture. This can be a bit time consuming, but you really want to make sure the camera is properly focused because once we get it focused and mounted, we won't touch the camera itself again for a long time. Once the camera is focused and mounted, everything else we will do is on the software side. So take your time here and make sure you are happy with your physical set up.
+
 
 
 
