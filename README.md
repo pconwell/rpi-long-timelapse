@@ -1,7 +1,11 @@
 # rpi-long-timelapse
 raspberry pi year long timelapse
 
-This project will set up a long-term time lapse with an unknown end date. The project will assume that the timelapse will be approximatley a year long, but this project should be scaleable to any duration AS LONG AS you have enough storage space. There are many factors that go into creating a timelapse, but a ballpark figure is to expect the file size *before* creating the final video (i.e. the source photos) to be approximately 2 TB. Depending on your particular setup, don't be suprized if it's much larger.
+This project will set up a long-term time lapse. This project should be scaleable to any duration *AS LONG AS* you have enough storage space to hold all the images needed to create the timelapse.
+
+In my particular setup below, I will only be taking pictures between sunrise and sunset (so let's assume an average of 12 hours per day) and I will be taking one picture per minute. The individual images are approximately 5 MB. So, roughly we can expect 12 x 60 x 5 = **3,600 MB / day** for storage needs. I am speculating that my project will last about one year, so 1.3 TB or so total storage will be needed. I would prepare at least twice what you think you will need to be safe.
+
+This storage requirement also is *only* the images themselves. You will also need some working space to make the actual timelapse video once you combine all the images. My best guess is you will need a few GBs for the timelapse output video.
 
 ## What you need
 
@@ -13,6 +17,7 @@ Things you need to have:
 - Micro SD card w/ Raspbian installed (Pretty much any micro SD should work, but I am using the SanDisk Extreme PRO 32 GB)
 - Somewhere to store vast number of photos (SD card won't hold enough - I am using a samba networked file share)
 - (optional) a case for the pi
+- (optional) an rpi camera focus tool (highly recommended)
 
 Things you need to know:
 - How to flash raspbian on to the SD card
@@ -22,15 +27,16 @@ Things you need to know:
 - How to run basic commands from CLI (we will not be using a GUI for anything)
 - How to mount a share/network drive (samba & fstab)
 - How to set up a cron job
+- Basic Python programing
 
 
 
 ## Initial Setup
-I will be using a [Raspberry Pi Zero W](https://www.raspberrypi.org/products/raspberry-pi-zero-w/) and a [camera module](https://www.raspberrypi.org/products/camera-module-v2/). Make sure you also get the correct cable as the camera module is compatable with both the full size pi and pi zero - but the cables are different between the full size and the zero. I ordered [this kit](https://www.adafruit.com/product/3414), which comes with everything you need except for a micro SD card. Pretty much any SD card should do fine, but I'm using [this one](https://www.amazon.com/gp/product/B06XYHN68L) which I honestly don't know much about other than it was relatively cheap and was recommended online for use with the pi.
+I will be using a [Raspberry Pi Zero W](https://www.raspberrypi.org/products/raspberry-pi-zero-w/) and a [camera module](https://www.raspberrypi.org/products/camera-module-v2/). Make sure you also get the correct cable as the camera module is compatable with both the full size pi and pi zero - but the cables are different between the full size and the zero. I ordered [this kit](https://www.adafruit.com/product/3414), which comes with everything you need except for a micro SD card and the camera focusing tool. Pretty much any SD card should do fine, but I'm using [this one](https://www.amazon.com/gp/product/B06XYHN68L) which I honestly don't know much about other than it was relatively cheap and was recommended for use with the pi.
 
 If you are not familiar with the pi zero, it does not have an ethernet port and only has mini hdmi and micro usb ports. If you have the adapters already, no big deal. But, I don't have the correct adapters and I don't want to double the price of this project by buying adapters I'll use once. So, we will need to set up wifi and ssh in a somewhat unique way.
 
-> side note - the camera will probably be out of focus depending on the distance to your subject. Don't do like I did - spend the 97¢ on the camera adjustment tool. I tried to use a pair of needle nose pliers, my hand slipped and I scratched the lens.
+> side note - the camera will probably be out of focus depending on the distance to your subject. Don't do like I did - spend the 95¢ on the camera adjustment tool. I tried to use a pair of needle nose pliers, my hand slipped and I scratched the lens. I highly recommend you spend the extra 95¢ so you don't have to spend $30 on a replacement camera module.
 
 ### Raspbian
 
@@ -74,9 +80,7 @@ Here we are setting up a network share because we won't be able to hold terabyte
 `//192.168.1.25/shared  /home/pi/shared cifs guest,uid=1000,iocharset=utf8 0 0`
 
 ## Additional Settings
-Once it looks like you can boot up and sign in to the pi, and t he camera is working, you can tweak some other settings in `$ sudo raspi-config` such as setting your locale, changing your password (highly recommended), etc.
-
-Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI and not using a GUI), I would recommend the following settings/tweaks inside raspi-config:
+Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI and not using a GUI), I would recommend the following settings/tweaks inside `$ raspi-config`:
 
 1. Run update
 2. Advanced -> expand storage (might be optional depending on the size of your SD card. A 32 GB card did not apparently need to be expanded)
@@ -120,8 +124,6 @@ Scheduling the photos is pretty straight forward. We just need to set a cronjob 
 
 > the raspistill function seems fine for capturing a signle image, but I had a lot of issues using `raspistill --timelapse`. I was unable to produce more than about 20 images before the process would fail.
 
-
-
 ## Storing Photos
 
 > redundancy & backups here
@@ -132,7 +134,7 @@ Scheduling the photos is pretty straight forward. We just need to set a cronjob 
 
 > probably not going to worry about power redundancy right now because (1) the power rarely goes out here, and (2) if/when it does go out it's only for short durations, and (3) once the power comes back on it will automatically boot back up and start taking pictures again.
 
-> One consideration I need to keep in mind is the server that hosts the samaba share takes about 15 minutes to boot up, so if there is a power failure, the rpi will be fine but the network share won't exist and there is (currently) no good way to re-mount the network share automatically. This *will* need to be addressed. Intial thought is to save the images to the internal SD card then move the images at night AND if the network is up. If the network is not up, reboot the pi and try again?
+> One consideration I need to keep in mind is the server that hosts the samaba share takes about 15 minutes to boot up and I don't currently have it on a UPS (I know, I know!), so if there is a power failure, the rpi will be fine but the network share won't exist and there is (currently) no good way to re-mount the network share automatically. This *will* need to be addressed. Intial thought is to save the images to the internal SD card then move the images at night AND if the network is up. If the network is down, reboot the pi and try again?
 
 ## Create Timelapse
 
