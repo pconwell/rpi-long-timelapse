@@ -5,8 +5,8 @@ This project will set up a long-term time lapse. This project should be scaleabl
 
 In my particular setup below, I will only be taking pictures between sunrise and sunset (so let's assume an average of 12 hours per day) and I will be taking one picture per minute. The individual images are approximately 5 MB. So, roughly we can expect 12 x 60 x 5 = **3,600 MB / day** for storage needs. I am speculating that my project will last about one year, so 1.3 TB or so total storage will be needed. I would prepare at least twice what you think you will need to be safe.
 
-This storage requirement also is *only* the images themselves. You will also need some working space to make the actual timelapse video once you combine all the images. My best guess is you will need a few GBs for the timelapse output video.
-
+This storage requirement also is *only* the images themselves. You will also need some working space to make the actual timelapse video once you combine all the images. My best guess currently is I will need about 70 GBs for my year long timelapse video.
+ 
 ## What you need
 
 Things you need to have:
