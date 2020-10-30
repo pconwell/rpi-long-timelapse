@@ -5,6 +5,9 @@ import datetime
 
 pd.set_option('display.max_columns', None)
 
+# get sunrise and sunset times for the below location and date range
+# downloads multiple ranges one at a time, then combines them into one csv
+
 
 month = 1
 start_year = 2019
