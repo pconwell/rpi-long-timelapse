@@ -177,6 +177,12 @@ $ ls *.jpg > stills.txt
 $ mencoder -nosound -ovc lavc -lavcopts vcodec=mpeg4:aspect=16/9:vbitrate=64000000 -vf scale=3280:2460 -o timelapse.avi -mf type=jpeg:fps=24 mf://@stills.txt
 ```
 
+~~~bash
+ffmpeg -pattern_type glob -i "/mnt/unraid/timelapse/$(date '+\%Y')/$(date '+\%m')/$(date '+\%d')/*.jpg" -c:v libx264 -vf "crop=2120:1844:0:0" /mnt/unraid/timelapse/$(date '+\%Y')/$(date '+\%m')/$(date '+\%d')/output.mp4 -y
+```
+
+
+
 ## Links
 https://www.raspberrypi.org/documentation/raspbian/applications/camera.md
 https://www.raspberrypi.org/documentation/usage/camera/raspicam/raspistill.md
