@@ -70,15 +70,19 @@ network={
 ```
 
 ### fstab
-Here we are setting up a network share because we won't be able to hold terabytes worth of information on the raspberry pi itself. You will need to set up a shared drive somehow, which I will currently not cover here. 
+~~Here we are setting up a network share because we won't be able to hold terabytes worth of information on the raspberry pi itself. You will need to set up a shared drive somehow, which I will currently not cover here. ~~
 
-But, for the sake of example, my network share is a samba share drive running on an ubuntu host. The host server is at IP `192.168.1.25` and the shared directory is `/shared`. Here I have mounted the network share drive at `/home/pi/shared` on the raspberry pi. Now, if I tell the raspberry pi to save a photo to `/home/pi/shared` it is *really* saving the picture to the network server at `//192.168.1.25/shared`. Setting up a network drive gives me several advantages. 1) Like I said, the rpi cannot hold TB of data, 2) I can easily manipulate the files remotely now, and 3) I can more easily create backups of the photos. I'd really hate to get 6 months into this project then lose data if my HDD/SD goes out. Here is the line I'll add to `fstab` on the rpi.
+~~But, for the sake of example, my network share is a samba share drive running on an ubuntu host. The host server is at IP `192.168.1.25` and the shared directory is `/shared`. Here I have mounted the network share drive at `/home/pi/shared` on the raspberry pi. Now, if I tell the raspberry pi to save a photo to `/home/pi/shared` it is *really* saving the picture to the network server at `//192.168.1.25/shared`. Setting up a network drive gives me several advantages. 1) Like I said, the rpi cannot hold TB of data, 2) I can easily manipulate the files remotely now, and 3) I can more easily create backups of the photos. I'd really hate to get 6 months into this project then lose data if my HDD/SD goes out. Here is the line I'll add to `fstab` on the rpi.~~
 
-`//192.168.1.25/shared  /home/pi/shared cifs guest,uid=1000,iocharset=utf8 0 0`
+Set up an NFS file server as desired (I'm using unRaid). Then use the following fstab.
 
-And here is the Samba config settings on the server:
+~~`//192.168.1.25/shared  /home/pi/shared cifs guest,uid=1000,iocharset=utf8 0 0`~~
 
-```
+192.168.1.23:/mnt/user/timelapse   /mnt/unraid/timelapse nfs defaults 0 0
+
+~~And here is the Samba config settings on the server:~~
+
+~~```
 [shared]
 browseable = yes
 path = /shared/
@@ -90,10 +94,32 @@ create mask = 664
 force create mode = 644
 directory mask = 755
 force directory mode = 755
+```~~
+
+NFS tends to have issues going stale, especially over wifi. So we can use an ugly, hackish script to check on the nfs connection every 60 seconds:
+
+```
+#!/bin/bash
+
+# crontab:
+#* * * * * /root/fix_stale_nfs.sh >/dev/null 2>&1
+
+list=$(ls /mnt/unraid)
+
+for i in $list
+do
+        status=$(ls /mnt/unraid/$i 2>&1)
+
+        if [[ $status =~ .*Stale.* ]]
+                then
+                umount -f /mnt/unraid/$i
+        fi
+done
+
+mount -a
 ```
 
-> Note: The above Samba config has no security on it at all. This is probably not the best way to do this, but this is inside my internal network that no one else has access to (in theory) and I'm just storing my images - so I'm not concerned. But, just know that this is not a good config from a security viewpoint.
-
+And then use `sudo crontab -e` to run the script as desired. Don't forget to make the script executable with `chmod +x` or the script won't work (even though the logs won't show you any errors).
 
 ## Additional Settings
 Since we will be using this rpi completely headlessly (i.e. only though SSH/CLI and not using a GUI), I would recommend the following settings/tweaks inside `$ raspi-config`:
