@@ -1,0 +1,2 @@
+# fix stale nfs handles
+* * * * * /home/pi/fix_stale_nfs.sh >/dev/null 2>&1
