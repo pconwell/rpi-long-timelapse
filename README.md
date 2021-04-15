@@ -70,31 +70,10 @@ network={
 ```
 
 ### fstab
-~~Here we are setting up a network share because we won't be able to hold terabytes worth of information on the raspberry pi itself. You will need to set up a shared drive somehow, which I will currently not cover here. ~~
-
-~~But, for the sake of example, my network share is a samba share drive running on an ubuntu host. The host server is at IP `192.168.1.25` and the shared directory is `/shared`. Here I have mounted the network share drive at `/home/pi/shared` on the raspberry pi. Now, if I tell the raspberry pi to save a photo to `/home/pi/shared` it is *really* saving the picture to the network server at `//192.168.1.25/shared`. Setting up a network drive gives me several advantages. 1) Like I said, the rpi cannot hold TB of data, 2) I can easily manipulate the files remotely now, and 3) I can more easily create backups of the photos. I'd really hate to get 6 months into this project then lose data if my HDD/SD goes out. Here is the line I'll add to `fstab` on the rpi.~~
 
 Set up an NFS file server as desired (I'm using unRaid). Then use the following fstab.
 
-~~`//192.168.1.25/shared  /home/pi/shared cifs guest,uid=1000,iocharset=utf8 0 0`~~
-
-192.168.1.23:/mnt/user/timelapse   /mnt/unraid/timelapse nfs defaults 0 0
-
-~~And here is the Samba config settings on the server:~~
-
-~~```
-[shared]
-browseable = yes
-path = /shared/
-guest ok = yes
-force user = pconwell
-force group = pconwell
-read only = no
-create mask = 664
-force create mode = 644
-directory mask = 755
-force directory mode = 755
-```~~
+`192.168.1.23:/mnt/user/timelapse   /mnt/unraid/timelapse nfs defaults 0 0`
 
 NFS tends to have issues going stale, especially over wifi. So we can use an ugly, hackish script to check on the nfs connection every 60 seconds:
 
