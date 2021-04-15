@@ -177,8 +177,9 @@ $ ls *.jpg > stills.txt
 $ mencoder -nosound -ovc lavc -lavcopts vcodec=mpeg4:aspect=16/9:vbitrate=64000000 -vf scale=3280:2460 -o timelapse.avi -mf type=jpeg:fps=24 mf://@stills.txt
 ```
 
+Since the timelapse vm is using UTC time (and it's a hassle to change an LXC container's timezone), we'll run it at 11pm local or "3am tomorrow" UTC. So we want to get "yesterday's" date.
 ```bash
-ffmpeg -pattern_type glob -i "/mnt/unraid/timelapse/$(date '+\%Y')/$(date '+\%m')/$(date '+\%d')/*.jpg" -c:v libx264 -vf "crop=2120:1844:0:0" /mnt/unraid/timelapse/$(date '+\%Y')/$(date '+\%m')/$(date '+\%d')/output.mp4 -y
+* 3 * * * ffmpeg -pattern_type glob -i "/mnt/unraid/timelapse/$(date -d 'yesterday' '+\%Y')/$(date -d 'yesterday' '+\%m')/$(date -d 'yesterday' '+\%d')/*.jpg" -c:v libx264 -vf "crop=2120:1844:0:0" /mnt/unraid/timelapse/$(date -d 'yesterday' '+\%Y')/$(date -d 'yesterday' '+\%m')/$(date -d 'yesterday' '+\%d')/output.mp4 -y
 ```
 
 
