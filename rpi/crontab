@@ -1,0 +1,5 @@
+# run python script to take picture every minute (every 60 seconds at the 00th second)
+* * * * * python3 /home/pi/capture.py
+
+# every night at 11pm (so it's the same date but after sunset), move all images to the appropriate YYYY/MM directory
+*/15 * * * * rsync --remove-source-files /home/pi/images/* /mnt/unraid/timelapse/$(date "+\%Y")/$(date "+\%m")/$(date "+\%d") >/dev/null 2>&1
