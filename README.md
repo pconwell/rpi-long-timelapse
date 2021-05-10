@@ -1,3 +1,5 @@
+> NOTE: Most of the source code in this project should be (mostly) fully up-to-date. However, the README is probably only about 85% up-to-date.
+
 # rpi-long-timelapse
 raspberry pi year long timelapse
 
