@@ -1,5 +1,8 @@
-# Generate timelapse video from photos(2a UTC == 10p central)
-* 2 * * * ffmpeg -pattern_type glob -i "/mnt/unraid/timelapse/$(date -d 'yesterday' '+\%Y')/$(date -d 'yesterday' '+\%m')/$(date -d 'yesterday' '+\%d')/*.jpg" -c:v libx264 -vf "crop=2120:1844:0:0" /mnt/unraid/timelapse/$(date -d 'yesterday' '+\%Y')/$(date -d 'yesterday' '+\%m')/$(date -d 'yesterday' '+\%d')/output.mp4 -y
+# fix nfs if stale
+* * * * * /root/fix_stale_nfs.sh >/dev/null 2>&1
 
-# Upload video to youtube (2:30a UTC == 10:30p central)
-30 2 * * * python3 /root/upload_video.py --file="/mnt/unraid/timelapse/$(date -d 'yesterday' '+\%Y')/$(date -d 'yesterday' '+\%m')/$(date -d 'yesterday' '+\%d')/output.mp4" --title="Contruction Progress $(date -d 'yesterday' '+\%Y')-$(date -d 'yesterday' '+\%m')-$(date -d 'yesterday' '+\%d')" --description="Construction Progress for New House Build $(date -d 'yesterday' '+\%Y')-$(date -d 'yesterday' '+\%m')-$(date -d 'yesterday' '+\%d')" --privacyStatus="public"
+# Generate timelapse video from photos(1:30a UTC == 9:30p central)
+30 1 * * * ffmpeg -pattern_type glob -i "/mnt/unraid/timelapse/$(date -d 'yesterday' '+\%Y')/$(date -d 'yesterday' '+\%m')/$(date -d 'yesterday' '+\%d')/*.jpg" -c:v libx264 -vf "crop=1600:1140:0:703" /mnt/unraid/timelapse/$(date -d 'yesterday' '+\%Y')/$(date -d 'yesterday' '+\%m')/$(date -d 'yesterday' '+\%d')/output.mp4 -y
+
+# Upload video to youtube (4:45a UTC == 11:45p central)
+45 4 * * * python3 /root/upload_video.py --file="/mnt/unraid/timelapse/$(date -d 'yesterday' '+\%Y')/$(date -d 'yesterday' '+\%m')/$(date -d 'yesterday' '+\%d')/output.mp4" --title="Construction Progress $(date -d 'yesterday' '+\%Y')-$(date -d 'yesterday''+\%m')-$(date -d 'yesterday' '+\%d')" --description="Construction Progress for New House Build $(date -d 'yesterday' '+\%Y')-$(date -d 'yesterday' '+\%m')-$(date -d 'yesterday' '+\%d')" --privacyStatus="private"
